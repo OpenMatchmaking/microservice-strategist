@@ -79,7 +79,6 @@ class SimpleAverage(BaseAlgorithm):
 
         if suitable_team and self.is_fair_seeding(player, suitable_team, teams_info, max_difference):
             added = True
-            team_name, _team_rating, _team_members_count = suitable_team
-            updated_teams[team_name].append(player)
+            updated_teams[suitable_team.name].append(player)
 
         return added, updated_teams
