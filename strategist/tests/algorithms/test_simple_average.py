@@ -6,11 +6,11 @@ from app.algorithms.simple_average import SimpleAverage
 
 class SimpleAlgorithmTestCase(TestCase):
 
-    def generate_player_data(self, game_mode, rating):
+    def generate_player_data(self, event_name, rating):
         return {
             "id": str(uuid4()),
             "response-queue": "{}-response-queue".format(str(uuid4())),
-            "event-name": game_mode,
+            "event-name": event_name,
             "detail": {
                 "rating": rating,
                 "content": {}
