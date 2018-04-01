@@ -28,7 +28,11 @@ class SimpleAverage(BaseAlgorithm):
 
     def find_suitable_team(self, teams_info):
         teams_info.sort(key=lambda team: team.team_size - team.players_count, reverse=True)
-        suitable_team = teams_info[0] if teams_info else None
+
+        suitable_team = None
+        if teams_info and teams_info[0].team_size > 0:
+            suitable_team = teams_info[0]
+
         return suitable_team
 
     def find_team_by_name(self, teams_info, value):
