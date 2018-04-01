@@ -21,12 +21,13 @@ class SimpleAverage(BaseAlgorithm):
             return TeamInfo(
                 name=team_name,
                 rating=self.get_average_team_rating(teams[team_name]),
-                players_count=self.get_players_count(teams[team_name])
+                players_count=self.get_players_count(teams[team_name]),
+                team_size=self.team_size
             )
         return list(map(team_info, teams))
 
     def find_suitable_team(self, teams_info):
-        teams_info.sort(key=lambda team: team.players_count)
+        teams_info.sort(key=lambda team: team.team_size - team.players_count, reverse=True)
         suitable_team = teams_info[0] if teams_info else None
         return suitable_team
 
@@ -47,7 +48,8 @@ class SimpleAverage(BaseAlgorithm):
         updated_team_info = TeamInfo(
             name=suitable_team.name,
             rating=self.calculate_new_team_rating(player, suitable_team),
-            players_count=suitable_team.players_count + 1
+            players_count=suitable_team.players_count + 1,
+            team_size=self.team_size
         )
         replace_item_index = self.find_team_by_name(teams_info, suitable_team.name)
         teams_info[replace_item_index] = updated_team_info
