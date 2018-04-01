@@ -1,5 +1,6 @@
 import os
 from types import ModuleType
+from pathlib import Path
 
 from app.game_mode import GameMode
 
@@ -15,7 +16,7 @@ class App(object):
         self.game_modes = self.load_game_modes(self.config)
 
     def load_config(self, config_path):
-        if config_path is None:
+        if not Path(config_path).is_file():
             return {}
 
         module = ModuleType(name='Config')
@@ -31,7 +32,7 @@ class App(object):
         }
 
     def load_game_modes(self, config):
-        game_mode_configurations = config[self.conf_game_modes_var]
+        game_mode_configurations = config.get(self.conf_game_modes_var, {})
         return {
             game_mode_name: GameMode(game_mode_name, **options)
             for (game_mode_name, options) in game_mode_configurations.items()
