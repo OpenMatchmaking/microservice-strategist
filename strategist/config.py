@@ -18,6 +18,6 @@ APP_GAME_MODES_CONFIGURATION = {
     'team-deathmatch': {
         'teams': 2,
         'team_size': 5,
-        'algorithm': 'SimpleAverages'
+        'algorithm': 'SimpleAverage'
     }
 }
