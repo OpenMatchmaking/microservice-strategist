@@ -24,7 +24,7 @@ class SimpleAlgorithmTestCase(TestCase):
             "team 2": []
         }
 
-        algorithm = SimpleAverage()
+        algorithm = SimpleAverage(1)
         added, updated_teams = algorithm.seed_player(new_player, teams)
 
         self.assertTrue(added)
@@ -39,7 +39,7 @@ class SimpleAlgorithmTestCase(TestCase):
             "team 2": []
         }
 
-        algorithm = SimpleAverage()
+        algorithm = SimpleAverage(1)
         added, updated_teams = algorithm.seed_player(new_player, teams)
 
         self.assertTrue(added)
@@ -54,7 +54,7 @@ class SimpleAlgorithmTestCase(TestCase):
             "team 2": []
         }
 
-        algorithm = SimpleAverage()
+        algorithm = SimpleAverage(1)
         added, updated_teams = algorithm.seed_player(new_player, teams)
 
         self.assertFalse(added)
@@ -74,7 +74,7 @@ class SimpleAlgorithmTestCase(TestCase):
             ]
         }
 
-        algorithm = SimpleAverage()
+        algorithm = SimpleAverage(2)
         added, updated_teams = algorithm.seed_player(new_player, teams)
 
         self.assertTrue(added)
@@ -89,7 +89,7 @@ class SimpleAlgorithmTestCase(TestCase):
             "team 2": []
         }
 
-        algorithm = SimpleAverage()
+        algorithm = SimpleAverage(2)
         added, updated_teams = algorithm.seed_player(new_player, rating_groups)
 
         self.assertTrue(added)
@@ -108,7 +108,7 @@ class SimpleAlgorithmTestCase(TestCase):
             ]
         }
 
-        algorithm = SimpleAverage()
+        algorithm = SimpleAverage(2)
         added, updated_teams = algorithm.seed_player(new_player, teams)
 
         self.assertFalse(added)
