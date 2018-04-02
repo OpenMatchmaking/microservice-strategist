@@ -1,3 +1,6 @@
+run:
+	python run.py
+
 flake:
 	flake8 aiorest_ws tests
 
