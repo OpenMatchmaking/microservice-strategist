@@ -1,3 +1,4 @@
+import asyncio
 import os
 from types import ModuleType
 from pathlib import Path
@@ -14,6 +15,7 @@ class App(object):
         config_path = os.environ.get(self.env_config_var, None)
         self.config = self.load_config(config_path)
         self.game_modes = self.load_game_modes(self.config)
+        self.extensions = {}
 
     def load_config(self, config_path):
         if not Path(config_path).is_file():
@@ -38,6 +40,28 @@ class App(object):
             for (game_mode_name, options) in game_mode_configurations.items()
         }
 
+    def await_tasks(self, tasks, loop):
+        for task in tasks:
+            loop.run_until_complete(task)
+
     def run(self, *arg, **kwargs):
-        # TODO: Run AMQP workers here
-        pass
+        self.loop = asyncio.get_event_loop()
+
+        try:
+            tasks = []
+            for worker in self.extensions.values():
+                init_task = asyncio.ensure_future(worker.init(self.loop))
+                tasks.append(init_task)
+
+            self.await_tasks(tasks, self.loop)
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            tasks = []
+            for worker in self.extensions.values():
+                deinit_task = asyncio.ensure_future(worker.deinit(self.loop))
+                tasks.append(deinit_task)
+
+            self.await_tasks(tasks, self.loop)
+            self.loop.close()
