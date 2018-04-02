@@ -29,7 +29,7 @@ class MatchCheckWorker(AmqpWorker):
 
         await channel.exchange_declare(
             exchange_name=self.REQUEST_EXCHANGE_NAME,
-            type_name='direct',
+            type_name='fanout',
             durable=True,
             passive=False
         )
