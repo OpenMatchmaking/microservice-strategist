@@ -3,5 +3,6 @@ marshmallow==3.0.0b8
 
 pytest==3.4.0
 pytest-cov==2.5.1
+pytest-asyncio==0.8.0
 
 flake8==3.5.0
