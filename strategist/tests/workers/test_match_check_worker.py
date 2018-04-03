@@ -150,6 +150,7 @@ async def test_worker_returns_an_updated_grouped_players(test_app):
     assert len(response['content']['grouped-players']['team 2']) == 1
     assert payload['new-player'] in response['content']['grouped-players']['team 2']
 
+
 @pytest.mark.asyncio
 async def test_worker_returns_the_grouped_players_without_any_changes(test_app):
     client = AmqpTestClient(
