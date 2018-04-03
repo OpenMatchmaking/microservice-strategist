@@ -1,6 +1,10 @@
+import json
+
 from aioamqp import AmqpClosedConnection
 
 from app.amqp.base import AmqpWorker
+from app.workers.schemas import RequestDataSchema
+from marshmallow import ValidationError
 
 
 class MatchCheckWorker(AmqpWorker):
@@ -10,7 +14,53 @@ class MatchCheckWorker(AmqpWorker):
     RESPONSE_EXCHANGE_NAME = "open-matchmaking.responses.direct"
     CONTENT_TYPE = 'application/json'
 
+    def validate_data(self, raw_data):
+        try:
+            data = json.loads(raw_data.strip())
+        except json.decoder.JSONDecodeError:
+            data = {}
+
+        deserializer = RequestDataSchema()
+        result = deserializer.load(data)
+
+        if result["game-mode"] not in self.app.game_modes.keys():
+            raise ValidationError(
+                "The specified game mode is not available.",
+                field_names=["game-mode", ]
+            )
+
+        return result
+
+    def seed_player(self, game_mode, player, teams):
+        added, teams = game_mode.seed_player(player, teams)
+        return {
+            "added": added,
+            "grouped-players": teams
+        }
+
     async def process_request(self, channel, body, envelope, properties):
+        try:
+            data = self.validate_data(body)
+            game_mode = self.app.game_modes[data["game-mode"]]
+            player = data["new-player"]
+            grouped_players = data["grouped-players"]
+            response = self.seed_player(game_mode, player, grouped_players)
+        except ValidationError as exc:
+            response = {"errors": [{"Validation error": exc.normalized_messages()}]}
+
+        if properties.reply_to:
+            await channel.publish(
+                json.dumps(response),
+                exchange_name=self.RESPONSE_EXCHANGE_NAME,
+                routing_key=properties.reply_to,
+                properties={
+                    'content_type': self.CONTENT_TYPE,
+                    'delivery_mode': 2,
+                    'correlation_id': properties.correlation_id
+                },
+                mandatory=True
+            )
+
         await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
 
     async def consume_callback(self, channel, body, envelope, properties):
