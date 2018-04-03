@@ -44,24 +44,30 @@ class App(object):
         for task in tasks:
             loop.run_until_complete(task)
 
+    def collect_worker_tasks(self, method_name, loop):
+        tasks = []
+        for worker in self.extensions.values():
+            func = getattr(worker, method_name)
+            init_task = asyncio.ensure_future(func(loop))
+            tasks.append(init_task)
+        return tasks
+
+    def init_workers(self, loop):
+        tasks = self.collect_worker_tasks('init', loop)
+        self.await_tasks(tasks, loop)
+
+    def deinit_workers(self, loop):
+        tasks = self.collect_worker_tasks('deinit', loop)
+        self.await_tasks(tasks, loop)
+
     def run(self, *arg, **kwargs):
         self.loop = asyncio.get_event_loop()
 
         try:
-            tasks = []
-            for worker in self.extensions.values():
-                init_task = asyncio.ensure_future(worker.init(self.loop))
-                tasks.append(init_task)
-
-            self.await_tasks(tasks, self.loop)
+            self.init_workers(self.loop)
             self.loop.run_forever()
         except KeyboardInterrupt:
             pass
         finally:
-            tasks = []
-            for worker in self.extensions.values():
-                deinit_task = asyncio.ensure_future(worker.deinit(self.loop))
-                tasks.append(deinit_task)
-
-            self.await_tasks(tasks, self.loop)
+            self.deinit_workers(self.loop)
             self.loop.close()

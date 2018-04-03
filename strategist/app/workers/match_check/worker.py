@@ -44,10 +44,18 @@ class MatchCheckWorker(AmqpWorker):
             game_mode = self.app.game_modes[data["game-mode"]]
             player = data["new-player"]
             grouped_players = data["grouped-players"]
-            response = self.seed_player(game_mode, player, grouped_players)
+            response = {
+                "content": self.seed_player(game_mode, player, grouped_players)
+            }
         except ValidationError as exc:
-            response = {"errors": [{"Validation error": exc.normalized_messages()}]}
+            response = {
+                "error": {
+                    "type": "ValidationError",
+                    "details": exc.normalized_messages()
+                }
+            }
 
+        response["event-name"] = properties.correlation_id
         if properties.reply_to:
             await channel.publish(
                 json.dumps(response),
@@ -69,7 +77,6 @@ class MatchCheckWorker(AmqpWorker):
     async def run(self, *args, **kwargs):
         try:
             _transport, protocol = await self.connect()
-            print("A new AMQP connection has been established...")
         except AmqpClosedConnection as exc:
             print(exc)
             return
