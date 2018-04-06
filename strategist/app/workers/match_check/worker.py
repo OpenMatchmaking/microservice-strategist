@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 from aioamqp import AmqpClosedConnection
@@ -72,7 +73,8 @@ class MatchCheckWorker(AmqpWorker):
         await channel.basic_client_ack(delivery_tag=envelope.delivery_tag)
 
     async def consume_callback(self, channel, body, envelope, properties):
-        self.app.loop.create_task(self.process_request(channel, body, envelope, properties))
+        loop = asyncio.get_event_loop()
+        loop.create_task(self.process_request(channel, body, envelope, properties))
 
     async def run(self, *args, **kwargs):
         try:
