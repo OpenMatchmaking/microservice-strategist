@@ -1,6 +1,10 @@
 import os
 
 
+SERVICE_NAME = 'strategist'
+SERVICE_VERSION = '0.1.0'
+
+
 def to_bool(value):
     return str(value).strip().lower() in ['1', 'true', 'yes']
 
