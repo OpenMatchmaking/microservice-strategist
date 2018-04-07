@@ -1,6 +1,6 @@
 import pytest
 
-from app.amqp.amqp_client import RpcAmqpClient
+from sage_utils.amqp.clients import RpcAmqpClient
 from app.workers.match_check.worker import MatchCheckWorker
 
 
@@ -44,38 +44,38 @@ async def test_worker_returns_a_validation_error_for_invalid_game_mode(test_app)
         response_exchange=RESPONSE_EXCHANGE
     )
     payload = {
-      "game-mode": "UNKNOWN_MODE",
-      "new-player": {
-        "id": "0146563d-0f45-4062-90a7-b13a583defad",
-        "response-queue": "player-2-queue",
-        "event-name": "find-game",
-        "detail": {
-          "rating": 2680,
-          "content": {
+        "game-mode": "UNKNOWN_MODE",
+        "new-player": {
             "id": "0146563d-0f45-4062-90a7-b13a583defad",
-            "games": 531,
-            "wins": 279
-          }
-        }
-      },
-      "grouped-players": {
-        "team 1": [
-          {
-            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
-            "response-queue": "player-1-queue",
+            "response-queue": "player-2-queue",
             "event-name": "find-game",
             "detail": {
-              "rating": 2702,
-              "content": {
-                "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
-                "games": 161,
-                "wins": 91
-              }
+                "rating": 2680,
+                "content": {
+                    "id": "0146563d-0f45-4062-90a7-b13a583defad",
+                    "games": 531,
+                    "wins": 279
+                }
             }
-          }
-        ],
-        "team 2": []
-      }
+        },
+        "grouped-players": {
+            "team 1": [
+                {
+                    "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                    "response-queue": "player-1-queue",
+                    "event-name": "find-game",
+                    "detail": {
+                        "rating": 2702,
+                        "content": {
+                            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                            "games": 161,
+                            "wins": 91
+                        }
+                    }
+                }
+            ],
+            "team 2": []
+        }
     }
     response = await client.send(payload=payload)
 
@@ -103,38 +103,38 @@ async def test_worker_returns_an_updated_grouped_players(test_app):
         response_exchange=RESPONSE_EXCHANGE
     )
     payload = {
-      "game-mode": "duel",
-      "new-player": {
-        "id": "0146563d-0f45-4062-90a7-b13a583defad",
-        "response-queue": "player-2-queue",
-        "event-name": "find-game",
-        "detail": {
-          "rating": 2680,
-          "content": {
+        "game-mode": "duel",
+        "new-player": {
             "id": "0146563d-0f45-4062-90a7-b13a583defad",
-            "games": 531,
-            "wins": 279
-          }
-        }
-      },
-      "grouped-players": {
-        "team 1": [
-          {
-            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
-            "response-queue": "player-1-queue",
+            "response-queue": "player-2-queue",
             "event-name": "find-game",
             "detail": {
-              "rating": 2702,
-              "content": {
-                "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
-                "games": 161,
-                "wins": 91
-              }
+                "rating": 2680,
+                "content": {
+                    "id": "0146563d-0f45-4062-90a7-b13a583defad",
+                    "games": 531,
+                    "wins": 279
+                }
             }
-          }
-        ],
-        "team 2": []
-      }
+        },
+        "grouped-players": {
+            "team 1": [
+                {
+                    "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                    "response-queue": "player-1-queue",
+                    "event-name": "find-game",
+                    "detail": {
+                        "rating": 2702,
+                        "content": {
+                            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                            "games": 161,
+                            "wins": 91
+                        }
+                    }
+                }
+            ],
+            "team 2": []
+        }
     }
     response = await client.send(payload=payload)
 
@@ -161,38 +161,38 @@ async def test_worker_returns_the_grouped_players_without_any_changes(test_app):
         response_exchange=RESPONSE_EXCHANGE
     )
     payload = {
-      "game-mode": "duel",
-      "new-player": {
-        "id": "0146563d-0f45-4062-90a7-b13a583defad",
-        "response-queue": "player-2-queue",
-        "event-name": "find-game",
-        "detail": {
-          "rating": 3500,
-          "content": {
+        "game-mode": "duel",
+        "new-player": {
             "id": "0146563d-0f45-4062-90a7-b13a583defad",
-            "games": 531,
-            "wins": 279
-          }
-        }
-      },
-      "grouped-players": {
-        "team 1": [
-          {
-            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
-            "response-queue": "player-1-queue",
+            "response-queue": "player-2-queue",
             "event-name": "find-game",
             "detail": {
-              "rating": 2702,
-              "content": {
-                "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
-                "games": 161,
-                "wins": 91
-              }
+                "rating": 3500,
+                "content": {
+                    "id": "0146563d-0f45-4062-90a7-b13a583defad",
+                    "games": 531,
+                    "wins": 279
+                }
             }
-          }
-        ],
-        "team 2": []
-      }
+        },
+        "grouped-players": {
+            "team 1": [
+                {
+                    "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                    "response-queue": "player-1-queue",
+                    "event-name": "find-game",
+                    "detail": {
+                        "rating": 2702,
+                        "content": {
+                            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                            "games": 161,
+                            "wins": 91
+                        }
+                    }
+                }
+            ],
+            "team 2": []
+        }
     }
     response = await client.send(payload=payload)
 

@@ -1,8 +1,9 @@
 import pytest
 
 from app.application import App
-from app.amqp.extension import AmqpExtension
 from app.workers.match_check.worker import MatchCheckWorker
+
+from sage_utils.amqp import AmqpExtension
 
 
 @pytest.fixture(scope="function")

@@ -2,10 +2,10 @@ import asyncio
 import json
 
 from aioamqp import AmqpClosedConnection
-
-from app.amqp.base import AmqpWorker
-from app.workers.schemas import RequestDataSchema
+from sage_utils.amqp.base import AmqpWorker
 from marshmallow import ValidationError
+
+from app.workers.schemas import RequestDataSchema
 
 
 class MatchCheckWorker(AmqpWorker):

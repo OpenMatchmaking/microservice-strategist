@@ -1,5 +1,6 @@
+from sage_utils.amqp.extension import AmqpExtension
+
 from app.application import App
-from app.amqp.extension import AmqpExtension
 from app.workers.match_check.worker import MatchCheckWorker
 
 

@@ -1,5 +1,5 @@
-from app.amqp.amqp_client import RpcAmqpClient
-from app.amqp.base import AmqpWorker
+from sage_utils.amqp.base import AmqpWorker
+from sage_utils.amqp.clients import RpcAmqpClient
 
 
 class MicroserviceRegisterWorker(AmqpWorker):
