@@ -4,6 +4,7 @@ from types import ModuleType
 from pathlib import Path
 
 from app.game_mode import GameMode
+from app.workers.microservice_register import MicroserviceRegisterWorker
 
 
 class App(object):
@@ -64,6 +65,9 @@ class App(object):
         self.loop = asyncio.get_event_loop()
 
         try:
+            register_worker = MicroserviceRegisterWorker(self)
+            self.loop.run_until_complete(register_worker.run())
+
             self.init_workers(self.loop)
             self.loop.run_forever()
         except KeyboardInterrupt:
