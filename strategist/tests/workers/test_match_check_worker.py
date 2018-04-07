@@ -1,7 +1,7 @@
 import pytest
 
+from app.amqp.amqp_client import RpcAmqpClient
 from app.workers.match_check.worker import MatchCheckWorker
-from tests.workers.amqp_client import AmqpTestClient
 
 
 REQUEST_QUEUE = MatchCheckWorker.QUEUE_NAME
@@ -11,7 +11,7 @@ RESPONSE_EXCHANGE = MatchCheckWorker.RESPONSE_EXCHANGE_NAME
 
 @pytest.mark.asyncio
 async def test_worker_returns_a_validation_error_for_missing_fields(test_app):
-    client = AmqpTestClient(
+    client = RpcAmqpClient(
         test_app,
         routing_key=REQUEST_QUEUE,
         request_exchange=REQUEST_EXCHANGE,
@@ -36,7 +36,7 @@ async def test_worker_returns_a_validation_error_for_missing_fields(test_app):
 
 @pytest.mark.asyncio
 async def test_worker_returns_a_validation_error_for_invalid_game_mode(test_app):
-    client = AmqpTestClient(
+    client = RpcAmqpClient(
         test_app,
         routing_key=REQUEST_QUEUE,
         request_exchange=REQUEST_EXCHANGE,
@@ -95,7 +95,7 @@ async def test_worker_returns_a_validation_error_for_invalid_game_mode(test_app)
 
 @pytest.mark.asyncio
 async def test_worker_returns_an_updated_grouped_players(test_app):
-    client = AmqpTestClient(
+    client = RpcAmqpClient(
         test_app,
         routing_key=REQUEST_QUEUE,
         request_exchange=REQUEST_EXCHANGE,
@@ -153,7 +153,7 @@ async def test_worker_returns_an_updated_grouped_players(test_app):
 
 @pytest.mark.asyncio
 async def test_worker_returns_the_grouped_players_without_any_changes(test_app):
-    client = AmqpTestClient(
+    client = RpcAmqpClient(
         test_app,
         routing_key=REQUEST_QUEUE,
         request_exchange=REQUEST_EXCHANGE,
