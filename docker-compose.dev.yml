@@ -28,7 +28,7 @@ services:
     tty: true
 
   microservice_auth:
-    image: openmatchmaking/microservice-auth:0.1.0
+    image: openmatchmaking/microservice-auth:0.1.1
     environment:
       - APP_HOST=0.0.0.0
       - APP_SERVER=sanic
