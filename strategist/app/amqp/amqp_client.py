@@ -3,7 +3,7 @@ import json
 from copy import deepcopy
 
 
-class AmqpTestClient(object):
+class RpcAmqpClient(object):
     CONTENT_TYPE = 'application/json'
     DEFAULT_PROPERTIES = {
         'content_type': CONTENT_TYPE,
