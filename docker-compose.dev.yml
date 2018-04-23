@@ -16,10 +16,10 @@ services:
       - APP_DEBUG=False
       - APP_SERVER=none
       - APP_CONFIG_PATH=./config.py
+      - WAIT_FOR_RABBITMQ=30
     volumes:
       - ./strategist:/app/
-    ports:
-      - "8000:8000"
+      - ./sage-utils-python:/app/sage-utils-python/
     depends_on:
       - rabbitmq
       - microservice_auth
@@ -38,10 +38,16 @@ services:
       - MONGODB_PASSWORD=password
       - MONGODB_HOST=mongodb
       - MONGODB_DATABASE=auth
+      - WAIT_FOR_MONGODB=30
+      - WAIT_FOR_REDIS=30
+      - WAIT_FOR_RABBITMQ=30
+    ports:
+      - "8000:8000"
     tty: true
     depends_on:
       - mongodb
       - redis
+      - rabbitmq
     networks:
     - app-tier
 
