@@ -14,9 +14,10 @@ class GameModeTestCase(TestCase):
         game_mode = GameMode('duel', 2, 1, 'SimpleAverage')
         new_player = generate_player_data('find-opponent', 2500)
 
-        added, updated_teams = game_mode.seed_player(new_player, {})
+        added, is_filled, updated_teams = game_mode.seed_player(new_player, {})
 
         self.assertTrue(added)
+        self.assertFalse(is_filled)
         self.assertEqual({"team 1", "team 2"}, set(updated_teams.keys()))
         self.assertEqual(len(updated_teams["team 1"]), 1)
         self.assertEqual(len(updated_teams["team 2"]), 0)
@@ -30,9 +31,27 @@ class GameModeTestCase(TestCase):
             "team 2": []
         }
 
-        added, updated_groups = game_mode.seed_player(new_player, teams)
+        added, is_filled, updated_teams = game_mode.seed_player(new_player, teams)
 
         self.assertTrue(added)
-        self.assertEqual(len(updated_groups["team 1"]), 1)
-        self.assertEqual(len(updated_groups["team 2"]), 1)
-        self.assertIn(new_player, updated_groups["team 2"])
+        self.assertTrue(is_filled)
+        self.assertEqual(len(updated_teams["team 1"]), 1)
+        self.assertEqual(len(updated_teams["team 2"]), 1)
+        self.assertIn(new_player, updated_teams["team 2"])
+
+    def test_game_mode_cant_seed_a_player_into_filled_teams(self):
+        game_mode = GameMode('duel', 2, 1, 'SimpleAverage')
+        new_player = generate_player_data("1v1", 2479)
+        teams = {
+            "team 1": [generate_player_data("1v1", 2500)],
+            "team 2": [generate_player_data("1v1", 2508)]
+        }
+
+        added, is_filled, updated_teams = game_mode.seed_player(new_player, teams)
+
+        self.assertFalse(added)
+        self.assertTrue(is_filled)
+        self.assertEqual(len(updated_teams["team 1"]), 1)
+        self.assertEqual(len(updated_teams["team 2"]), 1)
+        self.assertNotIn(new_player, updated_teams["team 1"])
+        self.assertNotIn(new_player, updated_teams["team 2"])
