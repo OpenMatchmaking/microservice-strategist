@@ -2,7 +2,7 @@ run:
 	python run.py
 
 flake:
-	flake8 aiorest_ws tests
+	flake8 app tests
 
 develop:
 	pip install -e .
