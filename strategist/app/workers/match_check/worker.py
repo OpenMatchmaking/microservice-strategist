@@ -33,9 +33,10 @@ class MatchCheckWorker(AmqpWorker):
         return result
 
     def seed_player(self, game_mode, player, teams):
-        added, teams = game_mode.seed_player(player, teams)
+        added, is_filled, teams = game_mode.seed_player(player, teams)
         return {
             "added": added,
+            "is_filled": is_filled,
             "grouped-players": teams
         }
 
