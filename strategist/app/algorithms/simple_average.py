@@ -83,7 +83,7 @@ class SimpleAverage(BaseAlgorithm):
         teams_info = self.get_teams_info(teams)
         suitable_team = self.find_suitable_team(teams_info)
 
-        if suitable_team and self.is_fair_seeding(player, suitable_team, teams_info, max_difference):
+        if suitable_team and self.is_fair_seeding(player, suitable_team, teams_info, max_difference):  # NOQA
             added = True
             updated_teams[suitable_team.name].append(player)
 
