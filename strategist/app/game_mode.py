@@ -34,7 +34,19 @@ class GameMode(object):
             for team_number in range(1, amount + 1)
         }
 
+    def is_teams_filled(self, teams):
+        return all([len(players) == self.team_size for _team_name, players in teams.items()])
+
     def seed_player(self, player, grouped_players, **kwargs):
         if not grouped_players:
             grouped_players = self.create_empty_teams(self.teams)
-        return self.algorithm.seed_player(player, grouped_players, **kwargs)
+
+        if self.is_teams_filled(grouped_players):
+            added = False
+            is_filled = True
+            updated_teams = grouped_players
+        else:
+            added, updated_teams = self.algorithm.seed_player(player, grouped_players, **kwargs)
+            is_filled = self.is_teams_filled(updated_teams)
+
+        return added, is_filled, updated_teams

@@ -144,6 +144,9 @@ async def test_worker_returns_an_updated_grouped_players(test_app):
     assert 'added' in response['content'].keys()
     assert response['content']['added'] is True
 
+    assert 'is_filled' in response['content'].keys()
+    assert response['content']['is_filled'] is True
+
     assert 'grouped-players' in response['content'].keys()
     assert len(response['content']['grouped-players']['team 1']) == 1
     assert payload['new-player'] not in response['content']['grouped-players']['team 1']
@@ -202,5 +205,83 @@ async def test_worker_returns_the_grouped_players_without_any_changes(test_app):
     assert 'added' in response['content'].keys()
     assert response['content']['added'] is False
 
+    assert 'is_filled' in response['content'].keys()
+    assert response['content']['is_filled'] is False
+
     assert 'grouped-players' in response['content'].keys()
     assert response['content']['grouped-players'] == payload['grouped-players']
+
+
+@pytest.mark.asyncio
+async def test_worker_returns_the_grouped_players_without_any_changes_when_try_seeding(test_app):
+    client = RpcAmqpClient(
+        test_app,
+        routing_key=REQUEST_QUEUE,
+        request_exchange=REQUEST_EXCHANGE,
+        response_queue='',
+        response_exchange=RESPONSE_EXCHANGE
+    )
+    payload = {
+        "game-mode": "duel",
+        "new-player": {
+            "id": "0146563d-0f45-4062-90a7-b13a583defad",
+            "response-queue": "player-3-queue",
+            "event-name": "find-game",
+            "detail": {
+                "rating": 2680,
+                "content": {
+                    "id": "0146563d-0f45-4062-90a7-b13a583defad",
+                    "games": 531,
+                    "wins": 279
+                }
+            }
+        },
+        "grouped-players": {
+            "team 1": [
+                {
+                    "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                    "response-queue": "player-1-queue",
+                    "event-name": "find-game",
+                    "detail": {
+                        "rating": 2702,
+                        "content": {
+                            "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                            "games": 161,
+                            "wins": 91
+                        }
+                    }
+                }
+            ],
+            "team 2": [
+                {
+                    "id": "56acbeb4-687d-4c8b-a881-0b9abdda64e4",
+                    "response-queue": "player-2-queue",
+                    "event-name": "find-game",
+                    "detail": {
+                        "rating": 2695,
+                        "content": {
+                            "id": "343e8c2d-6fda-40df-b859-90c5bafecb61",
+                            "games": 215,
+                            "wins": 126
+                        }
+                    }
+                }
+            ]
+        }
+    }
+    response = await client.send(payload=payload)
+
+    assert 'content' in response.keys()
+    assert 'event-name' in response.keys()
+
+    assert 'added' in response['content'].keys()
+    assert response['content']['added'] is False
+
+    assert 'is_filled' in response['content'].keys()
+    assert response['content']['is_filled'] is True
+
+    assert 'grouped-players' in response['content'].keys()
+    assert len(response['content']['grouped-players']['team 1']) == 1
+    assert payload['new-player'] not in response['content']['grouped-players']['team 1']
+    assert len(response['content']['grouped-players']['team 2']) == 1
+    assert payload['new-player'] not in response['content']['grouped-players']['team 2']
