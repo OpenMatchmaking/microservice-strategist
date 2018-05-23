@@ -3,6 +3,8 @@ import json
 
 from aioamqp import AmqpClosedConnection
 from sage_utils.amqp.base import AmqpWorker
+from sage_utils.constants import VALIDATION_ERROR
+from sage_utils.wrappers import Response
 from marshmallow import ValidationError
 
 from app.workers.schemas import RequestDataSchema
@@ -50,12 +52,7 @@ class MatchCheckWorker(AmqpWorker):
                 "content": self.seed_player(game_mode, player, grouped_players)
             }
         except ValidationError as exc:
-            response = {
-                "error": {
-                    "type": "ValidationError",
-                    "details": exc.normalized_messages()
-                }
-            }
+            response = Response.from_error(VALIDATION_ERROR, exc.normalized_messages()).data
 
         response["event-name"] = properties.correlation_id
         if properties.reply_to:

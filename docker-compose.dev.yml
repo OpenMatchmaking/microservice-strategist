@@ -19,7 +19,6 @@ services:
       - WAIT_FOR_RABBITMQ=30
     volumes:
       - ./strategist:/app/
-      - ./sage-utils-python:/app/sage-utils-python/
     depends_on:
       - rabbitmq
       - microservice_auth
@@ -28,7 +27,7 @@ services:
     tty: true
 
   microservice_auth:
-    image: openmatchmaking/microservice-auth:0.1.1
+    image: openmatchmaking/microservice-auth:0.1.2
     environment:
       - APP_HOST=0.0.0.0
       - APP_SERVER=sanic
