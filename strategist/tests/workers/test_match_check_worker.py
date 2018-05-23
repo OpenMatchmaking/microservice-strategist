@@ -1,6 +1,8 @@
 import pytest
 
 from sage_utils.amqp.clients import RpcAmqpClient
+from sage_utils.constants import VALIDATION_ERROR
+from sage_utils.wrappers import Response
 from app.workers.match_check.worker import MatchCheckWorker
 
 
@@ -20,18 +22,20 @@ async def test_worker_returns_a_validation_error_for_missing_fields(test_app):
     )
     response = await client.send(payload={})
 
-    assert 'error' in response.keys()
+    assert Response.ERROR_FIELD_NAME in response.keys()
+    error = response[Response.ERROR_FIELD_NAME]
 
-    assert 'type' in response['error'].keys()
-    assert response['error']['type'] == "ValidationError"
+    assert Response.ERROR_TYPE_FIELD_NAME in error.keys()
+    assert error[Response.ERROR_TYPE_FIELD_NAME] == VALIDATION_ERROR
 
-    assert 'details' in response['error'].keys()
-    assert len(response['error']['details']) == 3
+    assert Response.ERROR_DETAILS_FIELD_NAME in error.keys()
+    assert len(error[Response.ERROR_DETAILS_FIELD_NAME]) == 3
 
     for field in ['game-mode', 'new-player', 'grouped-players']:
-        assert field in response['error']['details']
-        assert len(response['error']['details'][field]) == 1
-        assert response['error']['details'][field][0] == 'Missing data for required field.'
+        assert field in error[Response.ERROR_DETAILS_FIELD_NAME]
+        assert len(error[Response.ERROR_DETAILS_FIELD_NAME][field]) == 1
+        assert error[Response.ERROR_DETAILS_FIELD_NAME][field][0] == 'Missing data for ' \
+                                                                     'required field.'
 
 
 @pytest.mark.asyncio
@@ -79,18 +83,19 @@ async def test_worker_returns_a_validation_error_for_invalid_game_mode(test_app)
     }
     response = await client.send(payload=payload)
 
-    assert 'error' in response.keys()
+    assert Response.ERROR_FIELD_NAME in response.keys()
+    error = response[Response.ERROR_FIELD_NAME]
 
-    assert 'type' in response['error'].keys()
-    assert response['error']['type'] == "ValidationError"
+    assert Response.ERROR_TYPE_FIELD_NAME in error.keys()
+    assert error[Response.ERROR_TYPE_FIELD_NAME] == VALIDATION_ERROR
 
-    assert 'details' in response['error'].keys()
-    assert len(response['error']['details']) == 1
+    assert Response.ERROR_DETAILS_FIELD_NAME in error.keys()
+    assert len(error[Response.ERROR_DETAILS_FIELD_NAME]) == 1
 
-    assert 'game-mode' in response['error']['details']
-    assert len(response['error']['details']['game-mode']) == 1
-    assert response['error']['details']['game-mode'][0] == 'The specified game mode ' \
-                                                           'is not available.'
+    assert 'game-mode' in error['details']
+    assert len(error[Response.ERROR_DETAILS_FIELD_NAME]['game-mode']) == 1
+    assert error[Response.ERROR_DETAILS_FIELD_NAME]['game-mode'][0] == 'The specified game mode ' \
+                                                                       'is not available.'
 
 
 @pytest.mark.asyncio
@@ -138,20 +143,21 @@ async def test_worker_returns_an_updated_grouped_players(test_app):
     }
     response = await client.send(payload=payload)
 
-    assert 'content' in response.keys()
-    assert 'event-name' in response.keys()
+    assert Response.CONTENT_FIELD_NAME in response.keys()
+    assert Response.EVENT_FIELD_NAME in response.keys()
+    content = response[Response.CONTENT_FIELD_NAME]
 
-    assert 'added' in response['content'].keys()
-    assert response['content']['added'] is True
+    assert 'added' in content.keys()
+    assert content['added'] is True
 
     assert 'is_filled' in response['content'].keys()
-    assert response['content']['is_filled'] is True
+    assert content['is_filled'] is True
 
-    assert 'grouped-players' in response['content'].keys()
-    assert len(response['content']['grouped-players']['team 1']) == 1
-    assert payload['new-player'] not in response['content']['grouped-players']['team 1']
-    assert len(response['content']['grouped-players']['team 2']) == 1
-    assert payload['new-player'] in response['content']['grouped-players']['team 2']
+    assert 'grouped-players' in content.keys()
+    assert len(content['grouped-players']['team 1']) == 1
+    assert payload['new-player'] not in content['grouped-players']['team 1']
+    assert len(content['grouped-players']['team 2']) == 1
+    assert payload['new-player'] in content['grouped-players']['team 2']
 
 
 @pytest.mark.asyncio
@@ -199,17 +205,18 @@ async def test_worker_returns_the_grouped_players_without_any_changes(test_app):
     }
     response = await client.send(payload=payload)
 
-    assert 'content' in response.keys()
-    assert 'event-name' in response.keys()
+    assert Response.CONTENT_FIELD_NAME in response.keys()
+    assert Response.EVENT_FIELD_NAME in response.keys()
+    content = response[Response.CONTENT_FIELD_NAME]
 
-    assert 'added' in response['content'].keys()
-    assert response['content']['added'] is False
+    assert 'added' in content.keys()
+    assert content['added'] is False
 
-    assert 'is_filled' in response['content'].keys()
-    assert response['content']['is_filled'] is False
+    assert 'is_filled' in content.keys()
+    assert content['is_filled'] is False
 
-    assert 'grouped-players' in response['content'].keys()
-    assert response['content']['grouped-players'] == payload['grouped-players']
+    assert 'grouped-players' in content.keys()
+    assert content['grouped-players'] == payload['grouped-players']
 
 
 @pytest.mark.asyncio
@@ -271,17 +278,18 @@ async def test_worker_returns_the_grouped_players_without_any_changes_when_try_s
     }
     response = await client.send(payload=payload)
 
-    assert 'content' in response.keys()
-    assert 'event-name' in response.keys()
+    assert Response.CONTENT_FIELD_NAME in response.keys()
+    assert Response.EVENT_FIELD_NAME in response.keys()
+    content = response[Response.CONTENT_FIELD_NAME]
 
-    assert 'added' in response['content'].keys()
-    assert response['content']['added'] is False
+    assert 'added' in content.keys()
+    assert content['added'] is False
 
-    assert 'is_filled' in response['content'].keys()
-    assert response['content']['is_filled'] is True
+    assert 'is_filled' in content.keys()
+    assert content['is_filled'] is True
 
-    assert 'grouped-players' in response['content'].keys()
-    assert len(response['content']['grouped-players']['team 1']) == 1
-    assert payload['new-player'] not in response['content']['grouped-players']['team 1']
-    assert len(response['content']['grouped-players']['team 2']) == 1
-    assert payload['new-player'] not in response['content']['grouped-players']['team 2']
+    assert 'grouped-players' in content.keys()
+    assert len(content['grouped-players']['team 1']) == 1
+    assert payload['new-player'] not in content['grouped-players']['team 1']
+    assert len(content['grouped-players']['team 2']) == 1
+    assert payload['new-player'] not in content['grouped-players']['team 2']
