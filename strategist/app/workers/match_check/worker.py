@@ -13,7 +13,7 @@ from app.workers.schemas import RequestDataSchema
 class MatchCheckWorker(AmqpWorker):
     PREFETCH_COUNT = 10
     QUEUE_NAME = "strategist.match.check"
-    REQUEST_EXCHANGE_NAME = "open-matchmaking.strategist.check.fanout"
+    REQUEST_EXCHANGE_NAME = "open-matchmaking.strategist.check.direct"
     RESPONSE_EXCHANGE_NAME = "open-matchmaking.responses.direct"
     CONTENT_TYPE = 'application/json'
 
@@ -86,7 +86,7 @@ class MatchCheckWorker(AmqpWorker):
 
         await channel.exchange_declare(
             exchange_name=self.REQUEST_EXCHANGE_NAME,
-            type_name='fanout',
+            type_name='direct',
             durable=True,
             passive=False
         )
