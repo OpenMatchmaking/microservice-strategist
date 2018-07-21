@@ -1,8 +1,8 @@
-aioamqp==0.10.0
+aioamqp==0.11.0
 marshmallow==3.0.0b12
-sage-utils==0.5.4
+sage-utils==0.5.5
 
-pytest==3.4.0
+pytest==3.6.3
 pytest-cov==2.5.1
 pytest-asyncio==0.8.0
 
