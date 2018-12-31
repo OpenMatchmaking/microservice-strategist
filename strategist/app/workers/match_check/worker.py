@@ -29,7 +29,7 @@ class MatchCheckWorker(AmqpWorker):
         if result["game-mode"] not in self.app.game_modes.keys():
             raise ValidationError(
                 "The specified game mode is not available.",
-                field_names=["game-mode", ]
+                field_name="game-mode"
             )
 
         return result
