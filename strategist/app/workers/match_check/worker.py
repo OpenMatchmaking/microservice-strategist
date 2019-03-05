@@ -27,10 +27,9 @@ class MatchCheckWorker(AmqpWorker):
         result = deserializer.load(data)
 
         if result["game-mode"] not in self.app.game_modes.keys():
-            raise ValidationError(
-                "The specified game mode is not available.",
-                field_name="game-mode"
-            )
+            raise ValidationError({
+                "game-mode": ["The specified game mode is not available.", ]
+            })
 
         return result
 
